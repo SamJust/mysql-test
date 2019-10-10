@@ -3,8 +3,9 @@ const connectionFactory = require('./db');
 
 const cache = new NodeCache();
 module.exports = {
-    async getAllBooks({ sort, limit, offset, ...filter}) {
-        const cacheKey = JSON.stringify(filter);
+    async getAllBooks(params) {
+        const { sort, limit, offset, ...filter} = params;
+        const cacheKey = JSON.stringify(params);
         const cachedValue = cache.get(cacheKey);
         if (cachedValue) {
             return cachedValue;
