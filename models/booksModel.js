@@ -23,12 +23,14 @@ module.exports = {
             extras += `ORDER BY ?`;
             values.push(sort);
         }
-        if (limit && offset) {
-            extras += 'LIMIT ?, ?';
-            values.push(--offset, --limit);
-        } else if (limit) {
-            extras += 'LIMIT ?';
-            values.push(--limit);
+        if (limit) {
+            if (offset) {
+                extras += 'LIMIT ?, ?';
+                values.push(--offset, --limit);
+            } else {
+                extras += 'LIMIT ?';
+                values.push(--limit);
+            }
         }
         const query = `${baseQuery}${whereClause && ' WHERE ' + whereClause} ${extras}`;
         const result = await connection.query(query, values).then((result) => result);
