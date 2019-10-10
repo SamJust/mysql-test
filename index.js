@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 const app = new Koa();
 app.use(bodyParser());
 
-const router = require('../routers');
+const router = require('./routers');
 app.use(router.routes());
 
 app.listen(PORT, () => {
