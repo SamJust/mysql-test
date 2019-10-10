@@ -3,7 +3,7 @@ const connectionFactory = require('../startup/db');
 
 const cache = new NodeCache();
 module.exports = {
-    async getAllBooks(filter) {
+    async getAllBooks({ sort, limit, offset, ...filter}) {
         const cacheKey = JSON.stringify(filter);
         const cachedValue = cache.get(cacheKey);
         if (cachedValue) {
@@ -18,7 +18,20 @@ module.exports = {
             values.push(filter[key]);
         }
         const whereClause = keys.join(' AND ');
-        const result = await connection.query(`${baseQuery} ${whereClause && ' WHERE ' + whereClause}`, values).then((result) => result);
+        let extras = '';
+        if (sort) {
+            extras += `ORDER BY ?`;
+            values.push(sort);
+        }
+        if (limit && offset) {
+            extras += 'LIMIT ?, ?';
+            values.push(--offset, --limit);
+        } else if (limit) {
+            extras += 'LIMIT ?';
+            values.push(--limit);
+        }
+        const query = `${baseQuery}${whereClause && ' WHERE ' + whereClause} ${extras}`;
+        const result = await connection.query(query, values).then((result) => result);
         connection.end();
         cache.set(cacheKey, result);
         return result;
