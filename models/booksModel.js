@@ -1,5 +1,5 @@
 const NodeCache = require('node-cache');
-const connectionFactory = require('../startup/db');
+const connectionFactory = require('./db');
 
 const cache = new NodeCache();
 module.exports = {
